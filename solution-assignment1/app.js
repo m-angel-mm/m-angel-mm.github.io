@@ -7,7 +7,6 @@ lunchCheckController.$inject=['$scope'];
 
 function lunchCheckController($scope) {
 
-
 $scope.lunch= function () {
 
   var elemts = $scope.lunchs.split(",");
@@ -15,9 +14,11 @@ $scope.lunch= function () {
 
 
   if(totalElemnts(elemts) > 3){
+    $scope.messStyle={color:'red'};
       $scope.mess="Too much!";
   }
     else {
+      $scope.messStyle={color:'green'};
       $scope.mess="Enjoy";
     }
 }
