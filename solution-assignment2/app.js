@@ -1,32 +1,88 @@
 (function () {
-	
-var toBuy = [{name:"Milk",quantity:2},
-{name:"Flour",quantity:1},
-{name:"Egg",quantity:12},
-{name:"Butter",quantity:2},
-{name:"Chocolate",quantity:3},
-{name:"Rasperries",quantity:15}];
+
+'use strict'
 
 angular.module("ShoppingListCheckOff",[])
-.controller("toBuyController",ToBuyController)
-.controller("alreadyBougthController",AlreadyBoughtController);	
-
+.controller("ToBuyController",ToBuyController)
+.controller("AlreadyBoughtController",AlreadyBoughtController)
+.service("ShoppingListCheckOffService",ShoppingListCheckOffService);
 
 
 //Controller As syntaxis
 
-toBuyController.$inject=['$scope']
-function ToBuyController($scope){
-	var buyController = this;
-	
+ToBuyController.$inject=['ShoppingListCheckOffService'];
+function ToBuyController(ShoppingListCheckOffService){
+	var buyController=this;
+
+	buyController.itemsToBuy=ShoppingListCheckOffService.getItems();
+	buyController.removeItems = function (itemIndex) {
+			var item=ShoppingListCheckOffService.getItem(itemIndex);
+			ShoppingListCheckOffService.itemBought(item);
+			ShoppingListCheckOffService.removeItems(itemIndex);
+	}
 }
 
-alreadyBougthController.$inject=['$scope']
+AlreadyBoughtController.$inject=['ShoppingListCheckOffService'];
 
-function AlreadyBoughtController($scope){
-	var boughtController = this;
-	
+function AlreadyBoughtController(ShoppingListCheckOffService){
+	var boughtController=this;
+
+	boughtController.itemsBought=ShoppingListCheckOffService.getItemsBought();
 }
-	
+
+
+function ShoppingListCheckOffService () {
+
+	var service=this;
+
+	var itemsBought=[];
+
+	var itemsToBuy=[{
+		name:"Flour",
+		quantity:1
+	},
+	{
+		name:"Eggs",
+		quantity:12
+	},
+	{
+		name:"Butter",
+		quantity:1
+	},
+	{
+		name:"Milk",
+		quantity:1
+	},
+	{
+		name:"Chocolate",
+		quantity:4
+	},
+	{
+		name:"Strawberries",
+		quantity:10
+	}];
+	var itemsBought=[];
+
+	service.getItems=function() {
+		return itemsToBuy;
+	};
+
+	service.removeItems=function(itemIndex){
+		itemsToBuy.splice(itemIndex,1);
+	}
+
+	service.itemBought=function (item) {
+
+		itemsBought.push(item);
+
+	}
+
+	service.getItem=function ( itemIndex) {
+		return itemsToBuy[itemIndex];
+	}
+
+	service.getItemsBought=function(){
+		return itemsBought;
+	}
+}
 } )()
-
