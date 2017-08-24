@@ -63,6 +63,7 @@ function ShoppingListCheckOffService () {
 	}];
 	var itemsBought=[];
 
+
 	service.getItems=function() {
 		return itemsToBuy;
 	};
