@@ -14,6 +14,7 @@ function NarrowItDownController ($scope,MenuSearchService) {
   narrowItDown.menuSearch = function () {
 
     var found = MenuSearchService.getMatchedMenuItems($scope.sTerm);
+    console.log(found);
   };
 
 }
@@ -26,26 +27,22 @@ function MenuSearchService ($http,ApiBasePath) {
 
   service.getMatchedMenuItems = function (searchTerm) {
 
-      var promise= $http ({
+      return $http ({
         method:"GET",
         url:ApiBasePath + "/menu_items.json"
-      });
-
-      promise.then(function (response) {
-        var items = response.data;
-        service.foundItems = [];
-
-        for(var i=0; i < items.length;i++ ){
-            if( items[i].description.includes(searchTerm) )
-              service.foundItems.push(items[i]);
-        }
-      });
-
-      console.log(service.foundItems);
-      return  service.foundItems;
+      }).then(function (response) {
+        return response.data.menu_items;
+      }).then(function ( menu_items) {
+        var foundItems = [];
+          for(var i = 0; i < menu_items.length; i++){
+            if (menu_items[i].description.includes(searchTerm)) {
+              foundItems.push(menu_items[i]);
+            }
+          }
+       return foundItems;
+     });
   };
 
 }
-
 
 })()
