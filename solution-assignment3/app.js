@@ -5,21 +5,47 @@
 angular.module("NarrowItDownApp",[])
 .controller("NarrowItDownController",NarrowItDownController)
 .service("MenuSearchService",MenuSearchService)
-.constant('ApiBasePath', "https://davids-restaurant.herokuapp.com");
+.directive("foundItems",FoundItemsDirective)
+.constant('ApiBasePath', "https://davids-restaurant.herokuapp.com")
+;
 
+/*
+* Controller NarrowItDownController, use to looking for items
+*/
 NarrowItDownController.$inject=['$scope','MenuSearchService'];
 function NarrowItDownController ($scope,MenuSearchService) {
   var narrowItDown = this;
 
   narrowItDown.menuSearch = function () {
 
-    var found = MenuSearchService.getMatchedMenuItems($scope.sTerm);
-    console.log(found);
+    if($scope.sTerm == undefined || $scope.sTerm == "")
+      return narrowItDown.found = [];
+
+  var promise = MenuSearchService.getMatchedMenuItems($scope.sTerm);
+
+  promise.then( function (response) {
+    narrowItDown.found = response;
+
+  }, function (error) {
+    narrowItDown.found = [];
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
   };
+
+  narrowItDown.removeItem = function (itemIndex) {
+    narrowItDown.found.splice(itemIndex,1);
+  }
 
 }
 
 
+/*
+* Service MenuSearchService, use to call menu_items REST service and
+* get list of items
+*/
 MenuSearchService.$inject=['$http','ApiBasePath'];
 function MenuSearchService ($http,ApiBasePath) {
   var service = this;
@@ -27,6 +53,7 @@ function MenuSearchService ($http,ApiBasePath) {
 
   service.getMatchedMenuItems = function (searchTerm) {
 
+//return array of menu items
       return $http ({
         method:"GET",
         url:ApiBasePath + "/menu_items.json"
@@ -45,4 +72,23 @@ function MenuSearchService ($http,ApiBasePath) {
 
 }
 
-})()
+//itemsFound directive function
+
+function FoundItemsDirective() {
+
+  var ddo = {
+    templateUrl:'menuList.html',
+    scope:{
+      found: '<',
+      onRemove : '&'
+    },
+    controller: 'NarrowItDownController',
+    controllerAs: 'narrowItDown',
+    bindToController: true
+
+  };
+
+  return ddo;
+}
+
+}) ();
