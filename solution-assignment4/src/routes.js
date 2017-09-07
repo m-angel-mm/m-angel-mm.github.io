@@ -26,7 +26,15 @@
         }]
       }
     }
-  );
+  )
+  .state('categories.itemDetails',{
+    url:'/{categoryShortName}/itemDetails',
+    templateUrl: 'src/template/items.component.html',
+    controller: 'ItemsController as ItemCtrl',
+    resolve:{ items:['MenuDataService','$stateParams',function (MenuDataService,$stateParams) {
+        return MenuDataService.getItemsForCategory($stateParams.categoryShortName);
+    }]}
+  });
 
   $urlRouterProvider.otherwise('/');
 
